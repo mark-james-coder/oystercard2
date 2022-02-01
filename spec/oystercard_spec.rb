@@ -21,18 +21,21 @@ MINIMUM_FARE = Oystercard::MINIMUM_FARE
       subject.touch_in
       expect(subject.in_journey).to be true
     end
-    it 'decreases the balance by minimum fare amount' do
-      subject.top_up(1)
-      expect{ subject.touch_in }.to change{ subject.balance }.by -1
-    end
     it "raises an error if oystercard does not have enough balance for the minimum fare" do
       expect { subject.touch_in }.to raise_error "Touch-in failed. Not enough balance to cover the minimum fare of £#{MINIMUM_FARE}."
     end
   end
+  describe '#touch_out' do
     it 'can touch out' do
       subject.top_up(1)
       subject.touch_in
       subject.touch_out
       expect(subject.in_journey).to be false
     end
+    it 'decreases the balance by minimum fare amount' do
+      subject.top_up(1)
+      subject.touch_in
+      expect{ subject.touch_out }.to change{ subject.balance }.by -1
+    end
+  end
 end

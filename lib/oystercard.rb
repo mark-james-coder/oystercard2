@@ -17,11 +17,11 @@ class Oystercard
 
   def touch_in
     fail "Touch-in failed. Not enough balance to cover the minimum fare of £#{MINIMUM_FARE}." if @balance - MINIMUM_FARE < 0
-    deduct(MINIMUM_FARE)
     @in_journey = true
   end
 
   def touch_out
+    deduct(MINIMUM_FARE)
     @in_journey = false
   end
 
