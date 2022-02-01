@@ -40,5 +40,10 @@ let(:entry_station) { double :entry_station }
       expect{ subject.touch_out }.to change{ subject.balance }.by -1
     end
   end
+  it 'shows if card is in journey' do
+    subject.top_up(1)
+    subject.touch_in(:entry_station)
+    expect(subject.in_journey?).to_not be nil
+  end
 
 end
