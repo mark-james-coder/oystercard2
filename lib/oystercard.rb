@@ -7,8 +7,6 @@ class Oystercard
 
   def initialize
     @balance = 0
-    @entry_station = nil
-    @exit_station = nil
     @journeys = []
   end
 
@@ -19,25 +17,37 @@ class Oystercard
 
   def touch_in(entry_station)
     fail "Touch-in failed. Not enough balance to cover the minimum fare of £#{MINIMUM_FARE}." if @balance - MINIMUM_FARE < 0
-    @entry_station = entry_station
+    @journey = Journey.new(entry_station)
   end
 
   def touch_out(exit_station)
-    deduct(MINIMUM_FARE)
-    @exit_station = exit_station
-    @journey = {@entry_station => @exit_station}
-    @journeys << @journey
-    @entry_station = nil
+    if @journey == nil
+      @journey = Journey.new(:no_station)
+    end
+    @journey.end_journey(exit_station)
+    deduct(@journey.fare)
+    puts "Your card has been deducted £#{@journey.fare}"
+    puts "Your card's new balance is £#{@balance}"
+    store_journey
+    clear_journey
   end
 
   def in_journey?
-    !!entry_station
+    @journey != nil
   end
 
 private
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def store_journey
+    @journeys << {@journey.entry_station => @journey.exit_station}
+  end
+
+  def clear_journey
+    @journey = nil
   end
 
 end

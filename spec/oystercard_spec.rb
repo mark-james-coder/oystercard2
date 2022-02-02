@@ -18,29 +18,10 @@ let(:exit_station) { double :exit_station }
       expect { subject.top_up 95}.to raise_error "Top up failed. Maximum allowed balance is £#{Oystercard::BALANCE_LIMIT}."
     end
   end
-  describe '#touch_in' do
-    it 'causes the card to remember the entry station' do
-      subject.top_up(1)
-      subject.touch_in(:entry_station)
-      expect(subject.entry_station).to eq :entry_station
-    end
-    it "raises an error if oystercard does not have enough balance for the minimum fare" do
-      expect { subject.touch_in('entry_station') }.to raise_error "Touch-in failed. Not enough balance to cover the minimum fare of £#{MINIMUM_FARE}."
-    end
+  it "raises an error if oystercard does not have enough balance for the minimum fare" do
+    expect { subject.touch_in('entry_station') }.to raise_error "Touch-in failed. Not enough balance to cover the minimum fare of £#{MINIMUM_FARE}."
   end
   describe '#touch_out' do
-    it 'causes the card to forget the entry station' do
-      subject.top_up(1)
-      subject.touch_in(:entry_station)
-      subject.touch_out(:exit_station)
-      expect(subject.entry_station).to be nil
-    end
-    it 'stores exit station' do
-      subject.top_up(1)
-      subject.touch_in(:entry_station)
-      subject.touch_out(:exit_station)
-      expect(subject.exit_station).to eq :exit_station
-    end
     it 'decreases the balance by minimum fare amount' do
       subject.top_up(1)
       subject.touch_in(:entry_station)
@@ -58,9 +39,7 @@ let(:exit_station) { double :exit_station }
   it 'stores a journey' do
     subject.top_up(1)
     subject.touch_in(:entry_station)
-    subject.touch_out(:exit_station)
-    expect(subject.journeys).to include subject.journey
-    p subject.journey
+    expect{ subject.touch_out(:exit_station) }.to change{ subject.journeys.count }.by 1
   end
 
 end
